@@ -1,5 +1,8 @@
 {
   "name": "ploma",
   "version": "0.1.0",
-  "main": "js/main.js"
+  "main": "js/main.js",
+  "dependencies": {
+    "sql.js": "^0.3.2"
+  }
 }

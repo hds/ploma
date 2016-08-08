@@ -1,0 +1,175 @@
+$background-colour: #fff;
+$table-list-background: #f6f6f6;
+$border-colour: #d4d4d4;
+$title-colour: #777777;
+$text-colour: #444444;
+
+$select-cell-background: #0668d6;
+$select-cell-text: #cddbfa;
+
+$table-header-background: #fefefe;
+$table-header-border: #d6d6d6;
+
+
+$filter-border: #b6b6b6;
+
+html, body, #app {
+    height: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+body {
+    background: $background-colour;
+    font-family: Helvetica, sans-serif;
+}
+
+@mixin no-text-select {
+    -webkit-user-select: none;
+    cursor: default;
+}
+
+.outer-wrapper {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+}
+
+.filter {
+    padding: 2px 6px 20px 6px;
+
+    input {
+        width: calc(100% - 2px);
+        border: 1px $filter-border solid;
+        border-radius: 3px;
+        background: transparent none;
+        text-align: center;
+    }
+}
+
+@mixin nice-tables {
+
+    table {
+        border-collapse: collapse;
+        border-spacing: 0;
+    }
+
+    thead th {
+        font-size: 9pt;
+        text-align: left;
+
+        @include no-text-select;
+    }
+
+    tbody {
+        padding: 0;
+        margin: 0;
+
+        tr.selected {
+            background-color: $select-cell-background;
+
+            td {
+                color: $select-cell-text;
+            }
+        }
+
+        td {
+            font-size: 9pt;
+            color: $text-colour;
+
+            height: 20px;
+
+            @include no-text-select;
+        }
+    }
+}
+
+@mixin table-list-table {
+    @include nice-tables;
+
+    table {
+        width: 100%;
+    }
+
+    thead th {
+        font-weight: 600;
+        text-transform: uppercase;
+        color: $title-colour;
+
+        padding: 0 0 0 4px;
+    }
+
+    tbody {
+        tr.selected {
+            background-color: $select-cell-background;
+
+            td {
+                color: $select-cell-text;
+            }
+        }
+
+        td {
+            padding: 0 0 0 20px;
+        }
+    }
+}
+
+@mixin table-details-table {
+    @include nice-tables;
+
+    table {
+        min-width: 100%;
+    }
+
+    thead {
+        tr {
+            background-color: $table-header-background;
+            border-bottom: 1px solid $table-header-border;
+            padding: 2px 0;
+        }
+
+        th {
+            font-weight: normal;
+            color: $text-colour;
+
+
+            height: 22px;
+
+            >div {
+                padding: 0 0 0 4px;
+            }
+
+            &:not(:first-child) {
+                >div {
+                    border-left: 1px solid $table-header-border;
+                }
+            }
+        }
+    }
+
+    tbody {
+        td {
+            padding: 0 0 0 4px;
+        }
+    }
+
+}
+
+.table-list {
+    background: $table-list-background none;
+    width: 200px;
+    flex: 0 1 auto;
+    border-right: 1px $border-colour solid;
+
+    @include table-list-table;
+
+}
+
+.table-detail {
+    background: #ffe none;
+    flex: 1 1 auto;
+    height: 100%;
+
+    @include table-details-table;
+
+}
