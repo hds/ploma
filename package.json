@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "description": "",
   "scripts": {
-    "start": "electron app/dev/js/main.js"
+    "start": "electron app/dev/js/main.js",
+    "postinstall": "cd app/dev && npm install"
   },
   "devDependencies": {
     "closurecompiler-externs": "^1.0.4",

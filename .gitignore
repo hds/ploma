@@ -12,5 +12,10 @@ node_modules/*
 *.iml
 *.ipr
 *.iws
-electron/*
+app/dev/js/
+app/dev/css/
+app/dev/node_modules/
+app/prod/js/
+app/prod/css/
+app/prod/node_modules/
 figwheel_server.log
