@@ -1,5 +1,6 @@
 (ns ploma.core
-    (:require [cljs.nodejs :as nodejs]))
+    (:require [cljs.nodejs :as nodejs]
+              [ploma.menu :as menu]))
 
 (def path (nodejs/require "path"))
 
@@ -31,6 +32,8 @@
   ;; ready listener
   (.on app "ready"
        (fn []
+         (menu/set-app-menu!)
+
          (reset! *win* (BrowserWindow. (clj->js {:width 800 :height 600})))
 
          ;; when no optimize comment out
