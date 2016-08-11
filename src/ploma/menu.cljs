@@ -4,15 +4,25 @@
 (def Electron (nodejs/require "electron"))
 (def Menu (.-Menu Electron))
 
-; const menu = Menu.buildFromTemplate(template)
 (defn build-menu [template]
   (.buildFromTemplate Menu template))
 
+(defn app-name []
+  "Ploma")
+
+(defn is-darwin? []
+  (= js/process.platform "darwin"))
+
+(defn toggle-dev-tools! [window]
+  (if window (.toggleDevTools (.-webContents window))))
+
+(defn reload! [window]
+  (if window (.reload window)))
+
 (defn create-main-menu []
   (let [template #js [
-          ; const name = require('electron').remote.app.getName()
           #js {
-            :label  "Ploma",
+            :label  (app-name),
             :submenu #js [
               #js { :role "about" }
               #js { :type "separator" }
@@ -43,195 +53,82 @@
               #js { :role "pasteandmatchstyle" }
               #js { :role "delete" }
               #js { :role "selectall" }
+              ; Darwin only
+              ; #js { :type "separator" }
+              ; #js {
+              ;   :label "Speech"
+              ;   :submenu #js [
+              ;     #js { :role "startspeaking" }
+              ;     #js { :role "stopspeaking" }
+              ;   ]
+              ; }
             ]
           }
           #js {
             :label "View"
             :submenu #js [
-            #js { :label "Reload" :accelerator "CmdOrCtrl+R" :click (fn [item focusedWindow] (if focusedWindow (.reload focusedWindow))) }
-            #js { :label "Toggle Developer Tools" :accelerator "Alt+Command+I" :click (fn [item focusedWindow] (js/console.log "Can't open developer tools right now."))}
+              #js {
+                :label "Reload"
+                :accelerator "CmdOrCtrl+R"
+                :click (fn [item focusedWindow] (reload! focusedWindow))
+              }
+              #js {
+                :label "Toggle Developer Tools"
+                :accelerator (if (is-darwin?) "Alt+Command+I" "Ctrl+Shift+I")
+                :click (fn [item focusedWindow] (toggle-dev-tools! focusedWindow))
+              }
+              #js { :type "separator" }
+              ; Non-Darwin
+              ; #js { :role "resetzoom" }
+              ; #js { :role "zoomin" }
+              ; #js { :role "zoomout" }
+              ; #js { :type "separator" }
+              #js { :role "togglefullscreen" }
+            ]
+          }
+          #js {
+            :role "window"
+            :submenu #js [
+              ; Non-Darwin
+              ; #js { :role "minimize" }
+              ; #js { :role "close" }
+              ; Darwin only
+              #js {
+                :label "Close"
+                :accelerator "CmdOrCtrl+W"
+                :role "close"
+              }
+              #js {
+                :label "Minimize"
+                :accelerator "CmdOrCtrl+M"
+                :role "minimize"
+              }
+              #js {
+                :label "Zoom"
+                :role "zoom"
+              }
+              #js {
+                :type "separator"
+              }
+              #js {
+                :label "Bring All to Front"
+                :role "front"
+              }
+            ]
+          }
+          #js {
+            :role "help"
+            :submenu #js [
+              #js {
+                :label "Learn More"
+                :click (fn [] (.openExternal (.-shell Electron) "http://electron.atom.io"))
+              }
             ]
           }
         ]]
     (build-menu template)
   ))
 
-; Menu.setApplicationMenu(menu)
 (defn set-app-menu! []
   (let [menu (create-main-menu)]
     (.setApplicationMenu Menu menu)))
-
-; const {Menu} = require('electron')
-;
-; const template = [
-;   {
-;     label: 'Edit',
-;     submenu: [
-;       {
-;         role: 'undo'
-;       },
-;       {
-;         role: 'redo'
-;       },
-;       {
-;         type: 'separator'
-;       },
-;       {
-;         role: 'cut'
-;       },
-;       {
-;         role: 'copy'
-;       },
-;       {
-;         role: 'paste'
-;       },
-;       {
-;         role: 'pasteandmatchstyle'
-;       },
-;       {
-;         role: 'delete'
-;       },
-;       {
-;         role: 'selectall'
-;       }
-;     ]
-;   },
-;   {
-;     label: 'View',
-;     submenu: [
-;       {
-;         label: 'Reload',
-;         accelerator: 'CmdOrCtrl+R',
-;         click (item, focusedWindow) {
-;           if (focusedWindow) focusedWindow.reload()
-;         }
-;       },
-;       {
-;         label: 'Toggle Developer Tools',
-;         accelerator: process.platform === 'darwin' ? 'Alt+Command+I' : 'Ctrl+Shift+I',
-;         click (item, focusedWindow) {
-;           if (focusedWindow) focusedWindow.webContents.toggleDevTools()
-;         }
-;       },
-;       {
-;         type: 'separator'
-;       },
-;       {
-;         role: 'resetzoom'
-;       },
-;       {
-;         role: 'zoomin'
-;       },
-;       {
-;         role: 'zoomout'
-;       },
-;       {
-;         type: 'separator'
-;       },
-;       {
-;         role: 'togglefullscreen'
-;       }
-;     ]
-;   },
-;   {
-;     role: 'window',
-;     submenu: [
-;       {
-;         role: 'minimize'
-;       },
-;       {
-;         role: 'close'
-;       }
-;     ]
-;   },
-;   {
-;     role: 'help',
-;     submenu: [
-;       {
-;         label: 'Learn More',
-;         click () { require('electron').shell.openExternal('http://electron.atom.io') }
-;       }
-;     ]
-;   }
-; ]
-;
-; if (process.platform === 'darwin') {
-;   const name = require('electron').remote.app.getName()
-;   template.unshift({
-;     label: name,
-;     submenu: [
-;       {
-;         role: 'about'
-;       },
-;       {
-;         type: 'separator'
-;       },
-;       {
-;         role: 'services',
-;         submenu: []
-;       },
-;       {
-;         type: 'separator'
-;       },
-;       {
-;         role: 'hide'
-;       },
-;       {
-;         role: 'hideothers'
-;       },
-;       {
-;         role: 'unhide'
-;       },
-;       {
-;         type: 'separator'
-;       },
-;       {
-;         role: 'quit'
-;       }
-;     ]
-;   })
-;   // Edit menu.
-;   template[1].submenu.push(
-;     {
-;       type: 'separator'
-;     },
-;     {
-;       label: 'Speech',
-;       submenu: [
-;         {
-;           role: 'startspeaking'
-;         },
-;         {
-;           role: 'stopspeaking'
-;         }
-;       ]
-;     }
-;   )
-;   // Window menu.
-;   template[3].submenu = [
-;     {
-;       label: 'Close',
-;       accelerator: 'CmdOrCtrl+W',
-;       role: 'close'
-;     },
-;     {
-;       label: 'Minimize',
-;       accelerator: 'CmdOrCtrl+M',
-;       role: 'minimize'
-;     },
-;     {
-;       label: 'Zoom',
-;       role: 'zoom'
-;     },
-;     {
-;       type: 'separator'
-;     },
-;     {
-;       label: 'Bring All to Front',
-;       role: 'front'
-;     }
-;   ]
-; }
-;
-; const menu = Menu.buildFromTemplate(template)
-; Menu.setApplicationMenu(menu)
