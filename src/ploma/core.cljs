@@ -9,12 +9,21 @@
 (def BrowserWindow (.-BrowserWindow Electron))
 
 (def crash-reporter (.-crashReporter Electron))
+(def dialog (.-dialog Electron))
 
 (def Os (nodejs/require "os"))
 
 (def *win* (atom nil))
 
 (def app (.-app Electron))
+
+(defn present-open-dialog! [window]
+  (let [options { :filters [ { :name "SQLite databases" :extensions [ "sqlite" "db" ] } ] }
+        files (.showOpenDialog dialog window options)]
+    (js/console.log files)))
+
+(defn menu-action! [action-label window]
+  (if (= action-label :open) (present-open-dialog! window)))
 
 (defn -main []
   (.start crash-reporter (clj->js {:companyName "Your Company Name"
@@ -32,7 +41,7 @@
   ;; ready listener
   (.on app "ready"
        (fn []
-         (menu/set-app-menu!)
+         (menu/set-app-menu! menu-action!)
 
          (reset! *win* (BrowserWindow. (clj->js {:width 800 :height 600})))
 
